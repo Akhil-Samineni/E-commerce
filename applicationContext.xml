@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+    <!-- Step 1: Define Database DataSource / connection pool -->
+
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:tcp://localhost/~/test" />
+        <property name="username" value="sa" />
+        <property name="password" value="" />
+    </bean>
+
+    <!-- Step 2: Setup Hibernate session factory -->
+    <!-- SessionFactory is an instance which will create Session objects.-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan">
+            <list>
+                <value>com.emusicstore</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <!-- dialect is which type of database we are using-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+
+                <!-- this validates or exports ddl schema to database there are four types validate
+                update create or destroys previous schema-->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+
+                <!--shows sql query in output-->
+                <prop key="hibernate.show_sql">true</prop>
+
+                <!--the output sql will be formatted-->
+                <prop key="hibernate.format_sql">true</prop>
+            </props>
+        </property>
+
+    </bean>
+
+    <!-- Step 3: Setup Hibernate transaction manager -->
+    <bean name="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <!-- this bean is for uploading a file-->
+    <bean name="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1024000"/>
+    </bean>
+
+
+</beans>
